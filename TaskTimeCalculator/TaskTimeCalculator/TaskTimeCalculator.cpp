@@ -19,8 +19,11 @@ int g_timerID;
 int main()
 {
     TaskA();
+    
     TaskB();
+    
     TaskC();
+    
     TaskB();
     
     return 0;
@@ -56,11 +59,13 @@ int InitializeTaskTimer(string uniquetimerName, int *uniquetimerID)
     {
         g_timerID++;
         g_timerMap.insert(pair<string, int>(uniquetimerName, g_timerID));
+
+         *uniquetimerID = g_timerID;
     }
     else
     {
-        // do nothing
+       *uniquetimerID = g_timerMap.find(uniquetimerName)->second;
     }
-    
+   
     return 0;
 }
