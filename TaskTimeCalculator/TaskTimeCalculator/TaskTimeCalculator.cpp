@@ -9,7 +9,7 @@ using namespace std;
 int InitializeTaskTimer(string uniquetimerName, int *uniquetimerID);
 int StartTaskTimer(string uniquetimerName, int uniquetimerID);
 int StopTaskTimer(string uniquetimerName, int uniquetimerID);
-std::chrono::duration<double> CalculateTaskTime(string uniquetimerName, int uniquetimerID);
+int CalculateTaskTime(string uniquetimerName, int uniquetimerID);
 
 void TaskA();
 void TaskB();
@@ -46,7 +46,7 @@ void TaskA()
 
     StopTaskTimer("TaskA", timerID);
     
-    std::chrono::duration<double> taskA_time = CalculateTaskTime("TaskA", timerID);
+    CalculateTaskTime("TaskA", timerID);
 }
 
 void TaskB()
@@ -60,7 +60,7 @@ void TaskB()
 
     StopTaskTimer("TaskB", timerID);
     
-    std::chrono::duration<double> taskA_time = CalculateTaskTime("TaskB", timerID);
+    CalculateTaskTime("TaskB", timerID);
 }
 
 void TaskC()
@@ -74,7 +74,7 @@ void TaskC()
 
     StopTaskTimer("TaskC", timerID);
     
-    std::chrono::duration<double> taskA_time = CalculateTaskTime("TaskC", timerID);
+    CalculateTaskTime("TaskC", timerID);
 }
 
 
@@ -117,7 +117,7 @@ int StopTaskTimer (string uniquetimerName, int uniquetimerID)
     return 0;
 }
 
-std::chrono::duration<double> CalculateTaskTime(string uniquetimerName, int uniquetimerID)
+int CalculateTaskTime(string uniquetimerName, int uniquetimerID)
 {
     chrono::time_point<chrono::system_clock> diff_start_time = g_start_times.find(uniquetimerName)->second;
     chrono::time_point<chrono::system_clock> diff_stop_time = g_stop_times.find(uniquetimerName)->second;
@@ -126,5 +126,5 @@ std::chrono::duration<double> CalculateTaskTime(string uniquetimerName, int uniq
 
     g_durations.insert(pair<string, std::chrono::duration<double>>(uniquetimerName, diff_time));
 
-    return diff_time;
+    return 0;
 }
