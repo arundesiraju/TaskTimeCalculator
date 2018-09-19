@@ -108,6 +108,11 @@ int StartTaskTimer (string uniquetimerName, int uniquetimerID)
 
     start_time = chrono::system_clock::now();
 
+    if(g_start_times.find(uniquetimerName) != g_start_times.end())
+    {
+        g_start_times.erase(uniquetimerName);
+    }
+
     g_start_times.insert(pair<string, chrono::time_point<chrono::system_clock>>(uniquetimerName, start_time));
 
     return 0;
@@ -118,6 +123,11 @@ int StopTaskTimer (string uniquetimerName, int uniquetimerID)
     chrono::time_point<chrono::system_clock> stop_time;
 
     stop_time = chrono::system_clock::now();
+
+    if(g_stop_times.find(uniquetimerName) != g_stop_times.end())
+    {
+        g_stop_times.erase(uniquetimerName);
+    }
 
     g_stop_times.insert(pair<string, chrono::time_point<chrono::system_clock>>(uniquetimerName, stop_time));
 
