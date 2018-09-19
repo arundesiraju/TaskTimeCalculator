@@ -3,6 +3,8 @@
 #include <string>
 #include <map>
 #include <Windows.h>
+#include <fstream>
+#include <vector>
 
 using namespace std;
 
@@ -14,11 +16,14 @@ int CalculateTaskTime(string uniquetimerName, int uniquetimerID);
 void TaskA();
 void TaskB();
 void TaskC();
+void SaveCsvFile();
 
 map<string, int> g_timerMap;
 map<string, chrono::time_point<chrono::system_clock>> g_start_times;
 map<string, chrono::time_point<chrono::system_clock>> g_stop_times;
 map<string, std::chrono::duration<double>> g_durations;
+map<string, int> g_iterations;
+vector<string> g_tasknames;
 
 int g_timerID;
 
@@ -32,6 +37,8 @@ int main()
     
     TaskB();
     
+    SaveCsvFile();
+
     return 0;
 }
 
@@ -124,7 +131,55 @@ int CalculateTaskTime(string uniquetimerName, int uniquetimerID)
 
     std::chrono::duration<double> diff_time = diff_stop_time - diff_start_time;
 
+    int num_iterations = 1;
+
+    if(g_durations.find(uniquetimerName) != g_durations.end())
+    {
+        diff_time += g_durations.find(uniquetimerName)->second;
+        g_durations.erase(uniquetimerName);
+
+        num_iterations++;
+        g_iterations.erase(uniquetimerName);
+    }
+
     g_durations.insert(pair<string, std::chrono::duration<double>>(uniquetimerName, diff_time));
+    g_iterations.insert(pair<string, int>(uniquetimerName, num_iterations));
+
+    if (std::find(g_tasknames.begin(), g_tasknames.end(),uniquetimerName)==g_tasknames.end())
+        g_tasknames.push_back(uniquetimerName);
 
     return 0;
+}
+
+void SaveCsvFile()
+{
+    const char* fileName = "timerDetails.csv";
+    std::ifstream ifile(fileName);
+    bool exists = (bool)ifile;
+
+    ofstream myfile;
+    myfile.open (fileName, std::fstream::app);
+
+    if(!exists)
+    {   
+        myfile << "Task Name,Number of Iterations,Time per Iteration,Total Time,Total Percentage"<<endl;
+    }
+    
+    double TotalTime = 0;
+    for(std::vector<string>::size_type i = 0; i != g_tasknames.size(); i++)
+    {
+        TotalTime += g_durations.find(g_tasknames[i])->second.count();
+    }
+
+    for(std::vector<string>::size_type i = 0; i != g_tasknames.size(); i++) 
+    {
+        int Num_iter = g_iterations.find(g_tasknames[i])->second;
+        double Duration = g_durations.find(g_tasknames[i])->second.count();
+        double TotalPercentage = 100 * (Duration/TotalTime);
+
+        myfile<<g_tasknames[i]<<","<<Num_iter<<","<<(double)Duration/Num_iter<<","<<Duration<<","<<TotalPercentage<<endl;
+        
+    }
+
+    myfile.close();
 }
